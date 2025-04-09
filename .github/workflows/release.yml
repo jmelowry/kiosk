@@ -43,4 +43,4 @@ jobs:
           name: "kiosk build from main (${{ env.RELEASE_DATE }})"
           files: dist/kiosk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_FOR_RELEASE }}
