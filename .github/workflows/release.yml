@@ -34,12 +34,13 @@ jobs:
           git tag $tag
           git push origin $tag
           echo "TAG_NAME=$tag" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          name: "kiosk build from main ($(date +%Y-%m-%d))"
+          name: "kiosk build from main (${{ env.RELEASE_DATE }})"
           files: dist/kiosk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
