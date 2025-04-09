@@ -24,9 +24,12 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -o dist/kiosk-dev .
 
       - name: Create Git tag
+        env:
+          PAT: ${{ secrets.PAT_FOR_RELEASE }}
         run: |
           git config user.name "kiosk bot"
           git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
           tag="dev-$(date +%s)"
           git tag $tag
           git push origin $tag
@@ -36,7 +39,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          name: "Pre-release from dev"
+          name: "Pre-release from dev ($(date +%Y-%m-%d))"
           files: dist/kiosk-dev
           prerelease: true
         env:
