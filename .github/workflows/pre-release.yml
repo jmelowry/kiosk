@@ -45,4 +45,4 @@ jobs:
           files: dist/kiosk-dev
           prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_FOR_RELEASE }}
