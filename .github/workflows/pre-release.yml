@@ -33,6 +33,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
           tag="dev-$(date +%s)"
+          echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
           git tag $tag
           git push origin $tag
           echo "TAG_NAME=$tag" >> $GITHUB_ENV
@@ -41,7 +42,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          name: "Pre-release from dev ($(date +%Y-%m-%d))"
+          name: "Pre-release from dev (${{ env.RELEASE_DATE }})"
           files: dist/kiosk-dev
           prerelease: true
         env:
