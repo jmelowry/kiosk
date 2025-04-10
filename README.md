@@ -1,3 +1,8 @@
 # kiosk
 
-[![Release (main)](https://github.com/jmelowry/kiosk/actions/workflows/release.yml/badge.svg)](https://github.com/jmelowry/kiosk/actions/workflows/release.yml) [![Pre-Release (dev)](https://github.com/jmelowry/kiosk/actions/workflows/pre-release.yml/badge.svg?branch=dev)](https://github.com/jmelowry/kiosk/actions/workflows/pre-release.yml) [![CI - main](https://github.com/jmelowry/kiosk/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/jmelowry/kiosk/actions/workflows/test.yml) [![CI - dev](https://github.com/jmelowry/kiosk/actions/workflows/test.yml/badge.svg?branch=dev)](https://github.com/jmelowry/kiosk/actions/workflows/test.yml)
+| Environment | Build Type   | Status                                                                                           |
+|-------------|--------------|--------------------------------------------------------------------------------------------------|
+| `main`      | Release       | [![Release](https://github.com/jmelowry/kiosk/actions/workflows/release.yml/badge.svg)](https://github.com/jmelowry/kiosk/actions/workflows/release.yml) |
+| `main`      | CI            | [![CI - main](https://github.com/jmelowry/kiosk/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/jmelowry/kiosk/actions/workflows/test.yml) |
+| `dev`       | Pre-Release   | [![Pre-Release](https://github.com/jmelowry/kiosk/actions/workflows/pre-release.yml/badge.svg?branch=dev)](https://github.com/jmelowry/kiosk/actions/workflows/pre-release.yml) |
+| `dev`       | CI            | [![CI - dev](https://github.com/jmelowry/kiosk/actions/workflows/test.yml/badge.svg?branch=dev)](https://github.com/jmelowry/kiosk/actions/workflows/test.yml) |
