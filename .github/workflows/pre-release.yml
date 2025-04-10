@@ -17,14 +17,6 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Run Tests
-        run: go test ./...
-
-      - name: Build
-        run: |
-          mkdir dist
-          GOOS=linux GOARCH=amd64 go build -o dist/kiosk-dev .
-
       - name: Create Git Tag and Push
         env:
           PAT: ${{ secrets.PAT_FOR_RELEASE }}
@@ -38,12 +30,52 @@ jobs:
           git push origin $tag
           echo "TAG_NAME=$tag" >> $GITHUB_ENV
 
+      - name: Run Tests
+        run: go test ./...
+
+      - name: Build (Multi-Arch)
+        run: |
+          mkdir -p dist
+          platforms=("darwin/amd64" "darwin/arm64" "linux/amd64" "linux/arm64")
+          for platform in "${platforms[@]}"
+          do
+            IFS="/" read -r GOOS GOARCH <<< "$platform"
+            folder="kiosk-dev-${{ env.TAG_NAME }}-${GOOS}-${GOARCH}"
+            mkdir -p "$folder"
+            echo "Building for $GOOS/$GOARCH -> $folder/kiosk"
+            GOOS=$GOOS GOARCH=$GOARCH go build -o "$folder/kiosk" .
+            tar -czf "dist/${folder}.tar.gz" -C "$folder" kiosk
+            rm -r "$folder"
+          done
+
+      - name: Generate SHA256 Checksums
+        run: |
+          cd dist
+          for file in *.tar.gz; do
+            sha256sum "$file" > "$file.sha256"
+          done
+          cd ..
+
+      - name: Create Release Notes with Checksums
+        run: |
+          echo "Pre-release from dev (${{ env.RELEASE_DATE }})" > release_notes.md
+          echo "" >> release_notes.md
+          echo "## SHA256 Checksums" >> release_notes.md
+          echo "" >> release_notes.md
+          cd dist
+          for file in *.tar.gz; do
+            checksum=$(cat "$file.sha256")
+            echo "\`$checksum\`  $file" >> ../release_notes.md
+          done
+          cd ..
+
       - name: Create Pre-Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
           name: "Pre-release from dev (${{ env.RELEASE_DATE }})"
-          files: dist/kiosk-dev
+          body_path: release_notes.md
+          files: dist/*
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_FOR_RELEASE }}
