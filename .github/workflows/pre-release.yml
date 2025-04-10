@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version: '1.21'
 
       - name: Create Git Tag and Push
         env:
@@ -47,6 +47,10 @@ jobs:
             tar -czf "dist/${folder}.tar.gz" -C "$folder" kiosk
             rm -r "$folder"
           done
+
+      - name: Generate Source Package
+        run: |
+          tar -czf "dist/source-${{ env.TAG_NAME }}.tar.gz" --exclude=.git --exclude=dist .
 
       - name: Generate SHA256 Checksums
         run: |
