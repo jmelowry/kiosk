@@ -40,7 +40,7 @@ jobs:
           for platform in "${platforms[@]}"
           do
             IFS="/" read -r GOOS GOARCH <<< "$platform"
-            folder="kiosk-dev-${{ env.TAG_NAME }}-${GOOS}-${GOARCH}"
+            folder="kiosk-${{ env.TAG_NAME }}-${GOOS}-${GOARCH}"
             mkdir -p "$folder"
             echo "Building for $GOOS/$GOARCH -> $folder/kiosk"
             GOOS=$GOOS GOARCH=$GOARCH go build -o "$folder/kiosk" .
