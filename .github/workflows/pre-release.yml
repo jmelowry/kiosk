@@ -64,9 +64,9 @@ jobs:
           echo "" >> release_notes.md
           cd dist
           for file in *.tar.gz; do
-            echo "#### $file" >> ../release_notes.md
+            echo "#### [$file](https://github.com/${{ github.repository }}/releases/download/${{ env.TAG_NAME }}/$file)" >> ../release_notes.md
             echo '```' >> ../release_notes.md
-            cat "$file.sha256" >> ../release_notes.md
+            cut -d' ' -f1 "$file.sha256" >> ../release_notes.md
             echo '```' >> ../release_notes.md
             echo "" >> ../release_notes.md
           done
