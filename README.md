@@ -1,7 +1,5 @@
 # kiosk
 
-# kiosk
-
 | Environment         | Status                                                                                               |
 |---------------------|------------------------------------------------------------------------------------------------------|
 | Release (main)      | [![Release](https://github.com/jmelowry/kiosk/actions/workflows/release.yml/badge.svg)](https://github.com/jmelowry/kiosk/actions/workflows/release.yml) |
