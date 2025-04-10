@@ -48,11 +48,33 @@ jobs:
             rm -r "$folder"
           done
 
+      - name: Generate SHA256 Checksums
+        run: |
+          cd dist
+          for file in *.tar.gz; do
+            sha256sum "$file" > "$file.sha256"
+          done
+          cd ..
+
+      - name: Create Release Notes with Checksums
+        run: |
+          echo "Pre-release from dev (${{ env.RELEASE_DATE }})" > release_notes.md
+          echo "" >> release_notes.md
+          echo "## SHA256 Checksums" >> release_notes.md
+          echo "" >> release_notes.md
+          cd dist
+          for file in *.tar.gz; do
+            checksum=$(cat "$file.sha256")
+            echo "\`$checksum\`  $file" >> ../release_notes.md
+          done
+          cd ..
+
       - name: Create Pre-Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
           name: "Pre-release from dev (${{ env.RELEASE_DATE }})"
+          body_path: release_notes.md
           files: dist/*
           prerelease: true
         env:
