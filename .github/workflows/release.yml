@@ -56,6 +56,10 @@ jobs:
           done
           cd ..
 
+      - name: Package Source Code
+        run: |
+          git archive --format=tar.gz --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
+
       - name: Create Release Notes with Checksums
         run: |
           echo "## Release from main (${{ env.RELEASE_DATE }})" > release_notes.md
