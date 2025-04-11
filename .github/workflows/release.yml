@@ -50,8 +50,7 @@ jobs:
 
       - name: Package Source Code
         run: |
-          mkdir -p "dist/kiosk-${{ env.TAG_NAME }}-source"
-          git archive --format=tar.gz --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
+          git archive --format=tar.gz --prefix="kiosk-${{ env.TAG_NAME }}/" --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
 
       - name: Generate SHA256 Checksums
         run: |
