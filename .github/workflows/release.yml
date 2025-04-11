@@ -48,6 +48,10 @@ jobs:
             rm -r "$folder"
           done
 
+      - name: Package Source Code
+        run: |
+          git archive --format=tar.gz --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
+
       - name: Generate SHA256 Checksums
         run: |
           cd dist
@@ -55,10 +59,6 @@ jobs:
             sha256sum "$file" > "$file.sha256"
           done
           cd ..
-
-      - name: Package Source Code
-        run: |
-          git archive --format=tar.gz --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
 
       - name: Create Release Notes with Checksums
         run: |
