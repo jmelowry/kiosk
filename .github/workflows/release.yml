@@ -44,12 +44,13 @@ jobs:
             mkdir -p "$folder"
             echo "Building for $GOOS/$GOARCH -> $folder/kiosk"
             GOOS=$GOOS GOARCH=$GOARCH go build -o "$folder/kiosk" .
-            tar -czf "dist/${folder}.tar.gz" -C "$folder" kiosk
+            tar -czf "dist/${folder}.tar.gz" -C "$folder" .
             rm -r "$folder"
           done
 
       - name: Package Source Code
         run: |
+          mkdir -p "dist/kiosk-${{ env.TAG_NAME }}-source"
           git archive --format=tar.gz --output="dist/kiosk-${{ env.TAG_NAME }}-source.tar.gz" HEAD
 
       - name: Generate SHA256 Checksums
