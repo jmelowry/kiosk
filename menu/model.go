@@ -57,10 +57,7 @@ func Start() error {
 func initialModel() model {
 	return model{
 		choices: []string{
-			"💾  Start Dev Session",
-			"📡  Attach to Logs",
-			"🗃️  Launch Notes Panel",
-			"🧼  Clean Workspace",
+			"📊  Launch BTOP",
 			"📂  Manage Tmux Sessions",
 			"🚪  Exit",
 		},
@@ -124,15 +121,10 @@ func (m model) updateMenus(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			switch m.choices[m.cursor] {
 			case "📂  Manage Tmux Sessions":
 				return tmuxMenuModel(), nil
-			case "💾  Start Dev Session":
-				err := CreateSession("dev-session")
+			case "📊  Launch BTOP":
+				err := LaunchBtopInSession()
 				if err != nil {
-					fmt.Println("Error starting tmux session:", err)
-				} else {
-					fmt.Println("Tmux session 'dev-session' started successfully.")
-					if err := AttachSession("dev-session"); err != nil {
-						fmt.Println("Error attaching to tmux session:", err)
-					}
+					fmt.Println("Error launching btop:", err)
 				}
 				return m, tea.Quit
 			case "🚪  Exit":
@@ -326,6 +318,14 @@ func (m model) viewSessionInput() string {
 
 	s += footerStyle.Render("Enter to confirm • Esc to cancel")
 
+	// Add tmux cheat sheet
+	cheatSheetStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#888888")).
+		Italic(true).
+		MarginTop(2)
+
+	s += "\n\n" + cheatSheetStyle.Render(GetTmuxCheatSheet())
+
 	return s
 }
 
@@ -373,6 +373,14 @@ func (m model) viewSessionList() string {
 	}
 
 	s += "\n\n" + footerStyle.Render("↑ ↓ to navigate  •  ⏎ to select  •  Esc to go back")
+
+	// Add tmux cheat sheet
+	cheatSheetStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#888888")).
+		Italic(true).
+		MarginTop(2)
+
+	s += "\n\n" + cheatSheetStyle.Render(GetTmuxCheatSheet())
 
 	return s
 }

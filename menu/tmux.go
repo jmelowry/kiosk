@@ -128,3 +128,62 @@ func KillSession(name string) error {
 	}
 	return nil
 }
+
+// LaunchBtopInSession launches btop in a tmux session named "btop"
+func LaunchBtopInSession() error {
+	// Check if the session already exists and kill it if it does
+	sessions, err := ListSessions()
+	if err == nil {
+		for _, session := range sessions {
+			if session == "btop" {
+				KillSession("btop")
+				break
+			}
+		}
+	}
+
+	// Create a new session for btop
+	if err := CreateSession("btop"); err != nil {
+		return fmt.Errorf("failed to create tmux session for btop: %w", err)
+	}
+
+	// Send the command to run btop in the session
+	cmd := execCommand("tmux", "send-keys", "-t", "btop", "btop", "C-m")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to start btop: %w", err)
+	}
+
+	// Attach to the session
+	return AttachSession("btop")
+}
+
+// GetTmuxCheatSheet returns a string containing common tmux commands
+func GetTmuxCheatSheet() string {
+	cheatSheet := `
+TMUX CHEAT SHEET
+
+Session Management:
+  Ctrl+b d          Detach from session
+  Ctrl+b $          Rename session
+  
+Window Management:  
+  Ctrl+b c          Create new window
+  Ctrl+b ,          Rename window
+  Ctrl+b n          Next window
+  Ctrl+b p          Previous window
+  Ctrl+b w          List windows
+  Ctrl+b &          Kill window
+  
+Pane Management:
+  Ctrl+b "          Split horizontally
+  Ctrl+b %          Split vertically
+  Ctrl+b arrow      Switch to pane in that direction
+  Ctrl+b z          Toggle pane zoom
+  Ctrl+b x          Kill pane
+  
+Copy Mode:
+  Ctrl+b [          Enter copy mode (use vi or emacs keys)
+  q                 Quit copy mode
+`
+	return cheatSheet
+}

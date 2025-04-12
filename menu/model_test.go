@@ -50,7 +50,7 @@ func TestTmuxMenuNavigation(t *testing.T) {
 	m := initialModel()
 
 	// Select the "Manage Tmux Sessions" option
-	m.cursor = 4 // Position of "📂  Manage Tmux Sessions"
+	m.cursor = 1 // Position of "📂  Manage Tmux Sessions" (now at index 1)
 	msg := tea.KeyMsg{Type: tea.KeyEnter}
 	updated, _ := m.Update(msg)
 	m = updated.(model)
