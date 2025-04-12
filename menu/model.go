@@ -72,13 +72,15 @@ func (m model) View() string {
 	s := headerStyle.Render("📟 KIOSK // Terminal Session Portal") + "\n\n"
 
 	for i, choice := range m.choices {
-		cursor := "   "
+		cursor := "   " // Default spacing for unselected items
 		if m.cursor == i {
-			cursor = cursorStyle.Render("▶")
+			cursor = cursorStyle.Render("▶ ") // Add a space after the cursor for alignment
+		} else {
+			cursor = "   " // Ensure unselected items have the same spacing
 		}
-		line := fmt.Sprintf("%s %s", cursor, choice)
+		line := fmt.Sprintf("%s%s", cursor, choice) // Combine cursor and choice
 		if m.cursor == i {
-			line = selectedStyle.Render(line)
+			line = selectedStyle.Render(line) // Apply selected style
 		}
 		s += line + "\n"
 	}
