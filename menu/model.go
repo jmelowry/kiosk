@@ -12,6 +12,7 @@ type model struct {
 	choices []string
 }
 
+// test commit hook
 var (
 	colorAccent   = lipgloss.Color("#00d9ff")
 	colorText     = lipgloss.Color("#bbbbbb")
