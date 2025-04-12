@@ -8,9 +8,49 @@ import (
 	"syscall"
 )
 
+// execCommand is a variable that holds the exec.Command function
+// It can be replaced with a mock function during tests
+var execCommand = exec.Command
+
+// InitTmux ensures tmux is properly configured for terminal restoration
+func InitTmux() error {
+	// Create a custom tmux configuration that helps preserve terminal settings
+	cmds := []string{
+		// Set terminal overrides to fix common issues
+		"tmux set-option -g set-clipboard on",
+		"tmux set-option -g default-terminal \"screen-256color\"",
+		"tmux set-option -g terminal-overrides \"xterm*:smcup@:rmcup@\"",
+		// Enable mouse support
+		"tmux set-option -g mouse on",
+		// Set escape-time to reduce delay issues
+		"tmux set-option -sg escape-time 10",
+		// Ensure alternate screen is properly used
+		"tmux set-window-option -g alternate-screen on",
+	}
+
+	for _, cmd := range cmds {
+		parts := strings.Fields(cmd)
+		command := execCommand(parts[0], parts[1:]...)
+		if err := command.Run(); err != nil {
+			// Don't fail if the command doesn't work, just continue
+			fmt.Printf("Warning: %s failed: %v\n", cmd, err)
+		}
+	}
+	return nil
+}
+
 // CreateSession creates a new tmux session with the given name.
 func CreateSession(name string) error {
-	cmd := exec.Command("tmux", "new-session", "-d", "-s", name)
+	// Initialize tmux with proper settings first
+	if err := InitTmux(); err != nil {
+		return err
+	}
+
+	// Create the session with terminal restoration options
+	cmd := execCommand("tmux", "new-session", "-d",
+		"-s", name,
+		"-e", "TERM=screen-256color")
+
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to create tmux session: %w", err)
 	}
@@ -19,7 +59,7 @@ func CreateSession(name string) error {
 
 // ListSessions lists all active tmux sessions.
 func ListSessions() ([]string, error) {
-	cmd := exec.Command("tmux", "list-sessions", "-F", "#S")
+	cmd := execCommand("tmux", "list-sessions", "-F", "#S")
 	output, err := cmd.Output()
 	if err != nil {
 		// Handle case where no sessions exist (tmux returns error)
@@ -65,15 +105,24 @@ func AttachSession(name string) error {
 		return fmt.Errorf("tmux not found in PATH: %w", err)
 	}
 
-	// Execute tmux attach-session by replacing the current process
-	// This is necessary for proper terminal handling
-	args := []string{"tmux", "attach-session", "-t", name}
+	// Execute tmux attach-session with options to properly restore terminal
+	// -d: detaches other clients
+	// The tput reset is used to reset terminal after detaching
+	args := []string{"tmux", "attach-session", "-d", "-t", name}
+
+	// Register a cleanup function to reset the terminal if this process exits
+	cleanupCmd := exec.Command("sh", "-c", "tput reset")
+	defer func() {
+		cleanupCmd.Stdout = os.Stdout
+		cleanupCmd.Run()
+	}()
+
 	return syscall.Exec(tmuxPath, args, os.Environ())
 }
 
 // KillSession kills a tmux session by name.
 func KillSession(name string) error {
-	cmd := exec.Command("tmux", "kill-session", "-t", name)
+	cmd := execCommand("tmux", "kill-session", "-t", name)
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to kill tmux session: %w", err)
 	}
